@@ -24,6 +24,15 @@
 #include <trackingqa/TrackFittingQA.h>
 #include <trackingqa/TpcSiliconQA.h>
 #include <trackingqa/VertexQA.h>
+#include <kfparticleqa/QAKFParticle.h>
+
+#pragma GCC diagnostic push
+
+#pragma GCC diagnostic ignored "-Wundefined-internal"
+
+#include <kfparticle_sphenix/KFParticle_sPHENIX.h>
+
+#pragma GCC diagnostic pop
 
 #include <phool/recoConsts.h>
 
@@ -37,6 +46,214 @@ R__LOAD_LIBRARY(libtpc.so)
 R__LOAD_LIBRARY(libmicromegas.so)
 R__LOAD_LIBRARY(libtrack_reco.so)
 R__LOAD_LIBRARY(libtrackingqa.so)
+R__LOAD_LIBRARY(libkfparticle_sphenix.so)
+
+void reconstruct_pipi_mass()
+{
+  Fun4AllServer *se = Fun4AllServer::instance();
+
+  std::string pipi_reconstruction_name = "pipi_reco";
+  KFParticle_sPHENIX *kfparticle = new KFParticle_sPHENIX(pipi_reconstruction_name);
+
+  kfparticle->setDecayDescriptor("K_S0 -> pi^+ pi^-");
+  kfparticle->saveOutput(false);
+
+  kfparticle->usePID();
+  kfparticle->setPIDacceptFraction(0.4);
+  kfparticle->dontUseGlobalVertex();
+  kfparticle->requireTrackVertexBunchCrossingMatch();
+  kfparticle->allowZeroMassTracks();
+  kfparticle->saveDST();
+  kfparticle->setContainerName(pipi_reconstruction_name);
+  kfparticle->magFieldFile("FIELDMAP_TRACKING");
+
+  //PV to SV cuts
+  kfparticle->constrainToPrimaryVertex();
+  kfparticle->setMotherIPchi2(100);
+  kfparticle->setFlightDistancechi2(-1.);
+  kfparticle->setMinDIRA(0.88);
+  kfparticle->setDecayLengthRange(0.1, FLT_MAX);
+
+  //Track parameters
+  kfparticle->setMinimumTrackPT(0.0);
+  kfparticle->setMinTPChits(20);
+  kfparticle->setMinMVTXhits(1);
+  kfparticle->setMinINTThits(0);
+
+  //Vertex parameters
+  kfparticle->setMaximumVertexchi2nDOF(20);
+  kfparticle->setMaximumDaughterDCA(0.5);
+  kfparticle->setMaximumDaughterDCA_XY(100);
+
+  //Parent parameters
+  kfparticle->setMotherPT(0);
+  kfparticle->setMinimumMass(0.40);
+  kfparticle->setMaximumMass(0.60);
+  kfparticle->setMaximumMotherVertexVolume(0.1);
+
+  se->registerSubsystem(kfparticle);
+
+  QAKFParticle *kfpqa = new QAKFParticle("QAKFParticle_K_S0","K_S0",0.4,0.6);
+  kfpqa->setKFParticleNodeName(pipi_reconstruction_name);
+  se->registerSubsystem(kfpqa);
+}
+
+void reconstruct_KK_mass()
+{
+  Fun4AllServer *se = Fun4AllServer::instance();
+
+  std::string KK_reconstruction_name = "KK_reco"; 
+  KFParticle_sPHENIX *kfparticle = new KFParticle_sPHENIX(KK_reconstruction_name);
+
+  kfparticle->setDecayDescriptor("phi -> K^+ K^-");
+  kfparticle->saveOutput(false);
+
+  kfparticle->usePID();
+  kfparticle->setPIDacceptFraction(0.4);
+  kfparticle->dontUseGlobalVertex();
+  kfparticle->requireTrackVertexBunchCrossingMatch();
+  kfparticle->allowZeroMassTracks();
+  kfparticle->saveDST();
+  kfparticle->setContainerName(KK_reconstruction_name);
+  kfparticle->magFieldFile("FIELDMAP_TRACKING");
+
+  //PV to SV cuts
+  kfparticle->constrainToPrimaryVertex();
+  kfparticle->setMotherIPchi2(100);
+  kfparticle->setFlightDistancechi2(-1.);
+
+  //Track parameters
+  kfparticle->setMinimumTrackPT(0.1);
+  kfparticle->setMaximumTrackPT(0.7);
+  kfparticle->setMaximumTrackchi2nDOF(100.);
+  kfparticle->setMinTPChits(25);
+  kfparticle->setMinMVTXhits(1);
+  kfparticle->setMinINTThits(0);
+
+  //Vertex parameters
+  kfparticle->setMaximumVertexchi2nDOF(20);
+  kfparticle->setMaximumDaughterDCA(0.05);
+  kfparticle->setMaximumDaughterDCA_XY(100);
+
+  //Parent parameters
+  kfparticle->setMotherPT(0);
+  kfparticle->setMinimumMass(0.98);
+  kfparticle->setMaximumMass(1.1);
+  kfparticle->setMaximumMotherVertexVolume(0.1);
+
+  se->registerSubsystem(kfparticle);
+
+  QAKFParticle *kfpqa = new QAKFParticle("QAKFParticle_phi","phi",0.98,1.1);
+  kfpqa->setKFParticleNodeName(KK_reconstruction_name);
+  se->registerSubsystem(kfpqa);
+}
+
+void reconstruct_ppi_mass()
+{
+  Fun4AllServer *se = Fun4AllServer::instance();
+
+  std::string ppi_reconstruction_name = "ppi_reco";
+  KFParticle_sPHENIX *kfparticle = new KFParticle_sPHENIX(ppi_reconstruction_name);
+
+  kfparticle->setDecayDescriptor("[Lambda0 -> proton^+ pi^-]cc");
+  kfparticle->saveOutput(false);
+
+  kfparticle->usePID();
+  kfparticle->setPIDacceptFraction(0.4);
+  kfparticle->dontUseGlobalVertex();
+  kfparticle->requireTrackVertexBunchCrossingMatch();
+  kfparticle->allowZeroMassTracks();
+  kfparticle->saveDST();
+  kfparticle->setContainerName(ppi_reconstruction_name);
+  kfparticle->magFieldFile("FIELDMAP_TRACKING");
+
+  //PV to SV cuts
+  kfparticle->constrainToPrimaryVertex(true);
+  kfparticle->setMotherIPchi2(100);
+  kfparticle->setFlightDistancechi2(-1.);
+  kfparticle->setMinDIRA(0.88);
+  kfparticle->setDecayLengthRange(0.1, FLT_MAX);
+
+  //Track parameters
+  kfparticle->setMinimumTrackPT(0.1);
+  kfparticle->setMinimumTrackIP_XY(0.05);
+  kfparticle->setMinTPChits(25);
+  kfparticle->setMinMVTXhits(1);
+  kfparticle->setMinINTThits(0);
+
+  //Vertex parameters
+  kfparticle->setMaximumVertexchi2nDOF(20);
+  kfparticle->setMaximumDaughterDCA(0.5);
+  kfparticle->setMaximumDaughterDCA_XY(100);
+
+  //Parent parameters
+  kfparticle->setMotherPT(0);
+  kfparticle->setMinimumMass(1.08);
+  kfparticle->setMaximumMass(1.15);
+  kfparticle->setMaximumMotherVertexVolume(0.1);
+
+  se->registerSubsystem(kfparticle);
+
+  QAKFParticle *kfpqa = new QAKFParticle("QAKFParticle_Lambda0","Lambda0",1.08,1.15);
+  kfpqa->setKFParticleNodeName(ppi_reconstruction_name);
+  se->registerSubsystem(kfpqa);
+}
+
+void reconstruct_Kpi_mass()
+{
+  Fun4AllServer *se = Fun4AllServer::instance();
+
+  std::string Kpi_reconstruction_name = "Kpi_reco";
+  KFParticle_sPHENIX *kfparticle = new KFParticle_sPHENIX(Kpi_reconstruction_name);
+  kfparticle->Verbosity(0);
+
+  kfparticle->setDecayDescriptor("[D0 -> K^- pi^+]cc");
+  kfparticle->saveOutput(false);
+
+  kfparticle->usePID();
+  kfparticle->setPIDacceptFraction(0.4);
+  kfparticle->dontUseGlobalVertex();
+  kfparticle->requireTrackVertexBunchCrossingMatch();
+  kfparticle->allowZeroMassTracks();
+  kfparticle->saveDST();
+  kfparticle->setContainerName(Kpi_reconstruction_name);
+  kfparticle->magFieldFile("FIELDMAP_TRACKING");
+
+  //PV to SV cuts
+  kfparticle->constrainToPrimaryVertex(true);
+  kfparticle->setMotherIPchi2(100);
+  kfparticle->setMotherIP(100);
+  kfparticle->setMotherIP_XY(0.005);
+  kfparticle->setFlightDistancechi2(5);
+  kfparticle->setMinDIRA(0.9);
+  kfparticle->setMinDIRA_XY(-1.1);
+  kfparticle->setDecayLengthRange_XY(0.005, FLT_MAX);
+
+  //Track parameters
+  kfparticle->setMinimumTrackPT(0.2);
+  kfparticle->setMaximumTrackchi2nDOF(300.);
+  kfparticle->setMinTPChits(25);
+  kfparticle->setMinMVTXhits(1);
+  kfparticle->setMinINTThits(0);
+
+  //Vertex parameters
+  kfparticle->setMaximumVertexchi2nDOF(20);
+  kfparticle->setMaximumDaughterDCA(0.1);
+  kfparticle->setMaximumDaughterDCA_XY(100); //5 mm
+
+  //Parent parameters
+  kfparticle->setMotherPT(0.0);
+  kfparticle->setMinimumMass(1.75);
+  kfparticle->setMaximumMass(1.95);
+  kfparticle->setMaximumMotherVertexVolume(0.1);
+
+  se->registerSubsystem(kfparticle);
+
+  QAKFParticle *kfpqa = new QAKFParticle("QAKFParticle_D0","D0",1.75,1.95);
+  kfpqa->setKFParticleNodeName(Kpi_reconstruction_name);
+  se->registerSubsystem(kfpqa);
+}
+
 void Fun4All_JobC(
     const int nEvents = 2,
     const int runnumber = 41626,
@@ -114,105 +331,20 @@ void Fun4All_JobC(
   Reject_Laser_Events();
 
   
-
-  /*
-   * Track Matching between silicon and TPC
-   */
-  // The normal silicon association methods
-  // Match the TPC track stubs from the CA seeder to silicon track stubs from PHSiliconTruthTrackSeeding
-  auto silicon_match = new PHSiliconTpcTrackMatching;
-  silicon_match->Verbosity(0);
-  silicon_match->set_pp_mode(TRACKING::pp_mode);
-  if(G4TPC::ENABLE_AVERAGE_CORRECTIONS)
-    {
-      // for general tracking
-      // Eta/Phi window is determined by 3 sigma window
-      // X/Y/Z window is determined by 4 sigma window
-      silicon_match->window_deta.set_posQoverpT_maxabs({-0.014,0.0331,0.48});
-      silicon_match->window_deta.set_negQoverpT_maxabs({-0.006,0.0235,0.52});
-      silicon_match->set_deltaeta_min(0.03);
-      silicon_match->window_dphi.set_QoverpT_range({-0.15,0,0}, {0.15,0,0});
-      silicon_match->window_dx.set_QoverpT_maxabs({3.0,0,0});
-      silicon_match->window_dy.set_QoverpT_maxabs({3.0,0,0});
-      silicon_match->window_dz.set_posQoverpT_maxabs({1.138,0.3919,0.84});
-      silicon_match->window_dz.set_negQoverpT_maxabs({0.719,0.6485,0.65});
-      silicon_match->set_crossing_deltaz_max(30);
-      silicon_match->set_crossing_deltaz_min(2);
-      
-      // for distortion correction using SI-TPOT fit and track pT>0.5
-      if (G4TRACKING::SC_CALIBMODE)
-	{
-	  silicon_match->window_deta.set_posQoverpT_maxabs({0.016,0.0060,1.13});
-	  silicon_match->window_deta.set_negQoverpT_maxabs({0.022,0.0022,1.44});
-	  silicon_match->set_deltaeta_min(0.03);
-	  silicon_match->window_dphi.set_QoverpT_range({-0.15,0,0}, {0.09,0,0});
-	  silicon_match->window_dx.set_QoverpT_maxabs({2.0,0,0});
-	  silicon_match->window_dy.set_QoverpT_maxabs({1.5,0,0});
-	  silicon_match->window_dz.set_posQoverpT_maxabs({1.213,0.0211,2.09});
-	  silicon_match->window_dz.set_negQoverpT_maxabs({1.307,0.0001,4.52});
-	  silicon_match->set_crossing_deltaz_min(1.2);
-	}
-    }
-  se->registerSubsystem(silicon_match);
-
-  // Match TPC track stubs from CA seeder to clusters in the micromegas layers
-  auto mm_match = new PHMicromegasTpcTrackMatching;
-  mm_match->Verbosity(0);
-  mm_match->set_rphi_search_window_lyr1(3.);
-  mm_match->set_rphi_search_window_lyr2(15.0);
-  mm_match->set_z_search_window_lyr1(30.0);
-  mm_match->set_z_search_window_lyr2(3.);
-
-  mm_match->set_min_tpc_layer(38);             // layer in TPC to start projection fit
-  mm_match->set_test_windows_printout(false);  // used for tuning search windows only
-  se->registerSubsystem(mm_match);
-
-  
-  auto deltazcorr = new PHTpcDeltaZCorrection;
-  deltazcorr->Verbosity(0);
-  se->registerSubsystem(deltazcorr);
-  
-  // perform final track fit with ACTS
-  auto actsFit = new PHActsTrkFitter;
-  actsFit->Verbosity(0);
-  actsFit->commissioning(G4TRACKING::use_alignment);
-  // in calibration mode, fit only Silicons and Micromegas hits
-  actsFit->fitSiliconMMs(G4TRACKING::SC_CALIBMODE);
-  actsFit->setUseMicromegas(G4TRACKING::SC_USE_MICROMEGAS);
-  actsFit->set_pp_mode(TRACKING::pp_mode);
-  actsFit->set_use_clustermover(true);  // default is true for now
-  actsFit->useActsEvaluator(false);
-  actsFit->useOutlierFinder(false);
-  actsFit->setFieldMap(G4MAGNET::magfield_tracking);
-  se->registerSubsystem(actsFit);
-  
-  
-  auto cleaner = new PHTrackCleaner();
-  cleaner->Verbosity(0);
-  cleaner->set_pp_mode(TRACKING::pp_mode);
-  se->registerSubsystem(cleaner);
-
-  PHSimpleVertexFinder *finder = new PHSimpleVertexFinder;
-  finder->Verbosity(0);
-  finder->setDcaCut(0.05);
-  finder->setTrackPtCut(0.1);
-  finder->setBeamLineCut(1);
-  finder->setTrackQualityCut(300);
-  finder->setNmvtxRequired(3);
-  finder->setOutlierPairCut(0.1);
-  se->registerSubsystem(finder);
-
-  auto vtxProp = new PHActsVertexPropagator;
-  vtxProp->Verbosity(0);
-  vtxProp->fieldMap(G4MAGNET::magfield_tracking);
-  se->registerSubsystem(vtxProp);
-  
+  Tracking_Reco_TrackMatching_run2pp();
+  Tracking_Reco_TrackFit_run2pp();
+  Tracking_Reco_Vertex_run2pp();
   
   auto tpcsiliconqa = new TpcSiliconQA;
   se->registerSubsystem(tpcsiliconqa);
 
   se->registerSubsystem(new TrackFittingQA);
   se->registerSubsystem(new VertexQA);
+
+  reconstruct_pipi_mass();
+  reconstruct_KK_mass();
+  reconstruct_ppi_mass();
+  reconstruct_Kpi_mass();
   
   Fun4AllOutputManager *out = new Fun4AllDstOutputManager("DSTOUT", outfilename);
   out->AddNode("Sync");
@@ -221,6 +353,11 @@ void Fun4All_JobC(
   out->AddNode("SvtxTrackSeedContainer");
   out->AddNode("SvtxTrackMap");
   out->AddNode("SvtxVertexMap");
+  out->StripRunNode("CYLINDERGEOM_MVTX");
+  out->StripRunNode("CYLINDERGEOM_INTT");
+  out->StripRunNode("CYLINDERCELLGEOM_SVTX");
+  out->StripRunNode("CYLINDERGEOM_MICROMEGAS_FULL");
+  out->StripRunNode("GEOMETRY_IO");
   se->registerOutputManager(out);
 
   se->run(nEvents);

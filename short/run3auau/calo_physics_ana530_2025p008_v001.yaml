@@ -1,11 +1,11 @@
 #______________________________________________________________________________________________________________________
-DST_TRIGGERED_EVENT_run3physics:
+Full_TRIGGERED_EVENT_run3physics:
   params:
     dsttype:    DST_TRIGGERED_EVENT
     period:     run3auau
     physicsmode: physics
     dataset:    run3auau # could be run3physics, run3calib, etc.
-    build:      new
+    build:      ana.530
     dbtag:      nocdbtag
     version:    1
 
@@ -15,7 +15,6 @@ DST_TRIGGERED_EVENT_run3physics:
     min_run_time:   300
     min_run_events: 100000
     combine_seg0_only: true
-    choose20:       true
 
   job:
     script:                 run_eventcombine.sh
@@ -29,31 +28,30 @@ DST_TRIGGERED_EVENT_run3physics:
     priority:              '3500'
 
 #______________________________________________________________________________________________________________________
-DST_STREAMING_EVENT_run3physics:
+Full_CALOFITTING_run3physics:
   params:
-    dsttype:    DST_STREAMING_EVENT
-    period:     run3auau
+    dsttype:     DST_CALOFITTING
+    period:      run3auau
     physicsmode: physics
-    dataset:    run3auau # could be run3cosmics, run3calib, etc.
-    build:      new
-    dbtag:      nocdbtag
-    version:    1
+    dataset:     run3auau
+    build:       ana.530
+    dbtag:       2025p008
+    version:     1
 
   input:
-    db:          rawr
+    db:          fcr
     table:       datasets
-    min_run_time:   300
-    min_run_events: 100000
-    combine_seg0_only: true
-    choose20:       true
+    intriplet:   ana530_nocdbtag_v001
 
   job:
-    script:                 run_parallel_streams.sh
-    # arguments:             '{nevents} {outbase} {logbase} {run} {seg} {daqhost} {outdir} {finaldir} {buildarg} {tag} {inputs} None {neventsper} {logdir} {comment} {histdir} {payload}'
+    script:                 run_fitting.sh
     log:                   '{condor}/{logbase}.condor'
-    neventsper:             10000
-    payload:                [streaming_code/*]
-    request_memory:         2024MB
-    request_xferslots:     '3'    
+    neventsper:             100000
+    payload:                [calo_code/*]
+    request_memory:         2500MB
+    request_cpus:          '1'
     batch_name:            '{dsttype}_{dataset}_{outtriplet}'
     priority:              '3500'
+
+###############################################################################################
+

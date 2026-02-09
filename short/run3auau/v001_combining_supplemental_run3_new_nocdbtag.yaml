@@ -1,67 +1,4 @@
 ################################################################################
-################################# Cosmics ######################################
-################################################################################
-#______________________________________________________________________________________________________________________
-DST_TRIGGERED_EVENT_run3cosmics:
-  params:
-    dsttype:    DST_TRIGGERED_EVENT
-    period:     run3auau
-    physicsmode: cosmics
-    dataset:    run3cosmics
-    build:      new
-    dbtag:      nocdbtag
-    version:    1
-
-  input:
-    db:             rawr
-    table:          datasets
-    min_run_time:   300
-    min_run_events: 100000
-    combine_seg0_only: false
-    choose20:       true
-    
-  job:
-    script:                 run_eventcombine.sh
-    # arguments:             '{nevents} {outbase} {logbase} {run} {seg} {daqhost} {outdir} {finaldir} {buildarg} {tag} {inputs} None {neventsper} {logdir} {comment} {histdir} {payload}'
-    log:                   '{condor}/{logbase}.condor'
-    neventsper:             10000
-    payload:                [triggered_code/*]
-    request_memory:         2024MB
-    request_xferslots:     '3'
-    batch_name:            '{dsttype}_{dataset}_{outtriplet}'
-    priority:              '3500'
-
-#______________________________________________________________________________________________________________________
-DST_STREAMING_EVENT_run3cosmics:
-  params:
-    dsttype:    DST_STREAMING_EVENT
-    period:     run3auau
-    physicsmode: cosmics
-    dataset:    run3cosmics
-    build:      new
-    dbtag:      nocdbtag
-    version:    1
-
-  input:
-    db:             rawr
-    table:          datasets
-    min_run_time:   300
-    min_run_events: 100000
-    combine_seg0_only: false
-    choose20:       true
-    
-  job:
-    script:                 run_parallel_streams.sh
-    # arguments:             '{nevents} {outbase} {logbase} {run} {seg} {daqhost} {outdir} {finaldir} {buildarg} {tag} {inputs} None {neventsper} {logdir} {comment} {histdir} {payload}'
-    log:                   '{condor}/{logbase}.condor'
-    neventsper:             10000
-    payload:                [streaming_code/*]
-    request_memory:         2024MB
-    request_xferslots:     '3'
-    batch_name:            '{dsttype}_{dataset}_{outtriplet}'
-    priority:              '3500'
-
-################################################################################
 ################################# Line_Laser ###################################
 ################################################################################
 #______________________________________________________________________________________________________________________
@@ -81,7 +18,6 @@ DST_STREAMING_EVENT_run3line_laser:
     min_run_time:   1
     min_run_events: 1
     combine_seg0_only: false
-    choose20:       false
 
   job:
     script:                 run_parallel_streams.sh
@@ -115,7 +51,6 @@ DST_STREAMING_EVENT_run3calib:
     min_run_time:   1
     min_run_events: 1
     combine_seg0_only: false
-    choose20:       false
 
   job:
     script:                 run_parallel_streams.sh

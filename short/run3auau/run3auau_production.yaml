@@ -6,7 +6,7 @@
 # submit: true     # create and submit condor jobs; default: false 
 # dstspider: true  # move dsts from the lake and register them; default: true
 # histspider: true # register additional .root files on gpfs; default: true
-# Note: off, on, yes, no, are also valid
+# Note that off, on, yes, no, are also valid
 
 ## Allow overriding some parameters - only relevant for condor, i.e. submission
 # jobmem: 4096MB # default: none
@@ -22,21 +22,16 @@ sphnxprod01:
   defaultlocations:
     submitdir:  /sphenix/data/data02/sphnxpro/production/run3auau/submission/{rule}
     prodbase:   /sphenix/u/sphnxpro/mainkolja/sphenixprod
-    configbase: /sphenix/u/sphnxpro/mainkolja/ProdFlow/short/run3auau    
+    configbase: /sphenix/u/sphnxpro/mainkolja/ProdFlow/short/run3auau
 
-  # Cosmics
-  # It's possible to use:
-  # runlist:  /sphenix/u/sphnxpro/mainkolja/runstoproduce_june.txt ## mutually exclusive with runs
-  DST_TRIGGERED_EVENT_run3cosmics:
-    config: v001_combining_supplemental_run3_new_nocdbtag.yaml
-    runs: [70000 99000] 
-    submit: off
-
-  DST_STREAMING_EVENT_run3cosmics:
-    config: v001_combining_supplemental_run3_new_nocdbtag.yaml
-    runs: [70000 99000]
-    submit: off
-
+  # From514_TRKR_CLUSTER_run3physics:
+  #   config: streaming_physics_ana523_2025p007_v001.yaml
+  #   runs: [77000 78601]
+  #   jobprio: 59
+  #   submit: off
+  #   dstspider: on
+  #   finishmon: off
+    
 ################################# Prod02 #######################################
 sphnxprod02:
   defaultlocations:
@@ -44,40 +39,41 @@ sphnxprod02:
     prodbase:   /sphenix/u/sphnxpro/mainkolja/sphenixprod
     configbase: /sphenix/u/sphnxpro/mainkolja/ProdFlow/short/run3auau
 
-  ##### Special stuff, laser, etc.
-  # Laser
-  DST_STREAMING_EVENT_run3line_laser:
-    config: v001_combining_supplemental_run3_new_nocdbtag.yaml
-    runs: [69100 99000]
-    submit: off
 
-  # Calib
-  DST_STREAMING_EVENT_run3calib:
-    config: v001_combining_supplemental_run3_new_nocdbtag.yaml
-    runs: [69500 88000]
-    submit: off
+  From514_TRKR_CLUSTER_run3physics:
+    config: streaming_physics_ana523_2025p007_v001.yaml
+    runs: [72500 75000]
+    jobprio: 59
+    submit: on
+    dstspider: on
+    finishmon: on
+
+  # Full_TRKR_SEED_run3physics:
+  #   config: streaming_physics_ana523_2025p007_v001.yaml
+  #   runs: [72500 75000]
+  #   jobprio: 29
+  #   submit: on
+  #   dstspider: on
+  #   finishmon: on
 
 ################################# Prod03 #######################################    
 sphnxprod03:
-  #### TRKR and SEED
   defaultlocations:
     submitdir:  /sphenix/data/data02/sphnxpro/production/run3auau/submission/{rule}
     prodbase:   /sphenix/u/sphnxpro/mainkolja/sphenixprod
     configbase: /sphenix/u/sphnxpro/mainkolja/ProdFlow/short/run3auau
-    
-  # Rolling TRKR
-  DST_TRKR_CLUSTER_run3physics:
-    config: v001_tracking_run3_new_newcdbtag.yaml
-    runs: [70000 99000]
-    submit: off
 
-  # Rolling SEED
-  DST_TRKR_SEED_run3physics:    
-    config: v001_tracking_run3_new_newcdbtag.yaml
-    runs: [70000 99000]
-    submit: off
-    
-################################# Prod04 #######################################
+  # SEED physics
+  Full_TRKR_SEED_run3physics:
+    config: streaming_physics_ana523_2025p007_v001.yaml
+    runs: [72500 75000]
+    jobprio: 29
+    submit: on
+    dstspider: on
+    finishmon: on
+
+
+################################# prod04 #######################################
 sphnxprod04:
   #### Standard combination production
   defaultlocations:
@@ -85,25 +81,29 @@ sphnxprod04:
     prodbase:   /sphenix/u/sphnxpro/mainkolja/sphenixprod
     configbase: /sphenix/u/sphnxpro/mainkolja/ProdFlow/short/run3auau
 
-  # Rolling TRIGGERED production
-  DST_TRIGGERED_EVENT_run3physics:    
-    config: v001_combining_run3_new_nocdbtag.yaml
-    runs: [66456 99000]
-    jobprio: 5000
-    submit: off
-
-  # Rolling STREAMING production
-  DST_STREAMING_EVENT_run3physics:
-    config: v001_combining_run3_new_nocdbtag.yaml
-    runs: [67500 99000]
-    jobprio: 5000
-    # jobmem: 4000MB
-    submit: off
-
-  # Vernier. Can't be used for submission. 
-  # Either needs "combine_seg0_only: false" in a special yaml,
-  # or better just submit this run with '--no-onlyseg0'
-  # DST_TRIGGERED_EVENT_run3physics:    
-  #   config: v001_combining_run3_new_nocdbtag.yaml
-  #   runs: [69561]
+  # Full_TRKR_SEED_run3physics:
+  #   config: streaming_physics_ana523_2025p007_v001.yaml
+  #   runs: [76000 78954]
+  #   jobprio: 29
   #   submit: off
+  #   dstspider: on
+  #   finishmon: off
+
+################################# Snippets #######################################
+  # # Rolling TRIGGERED production
+  # Full_TRIGGERED_EVENT_run3physics:
+  #   config: calo_physics_ana530_2025p008_v001.yaml
+  #   runs: [78950 90000]
+  #   jobprio: 90
+  #   submit: OFF
+  #   dstspider: on
+    
+  # # Rolling CALOFITTING PRODUCTION
+  # Full_CALOFITTING_run3physics:
+  #   config: calo_physics_ana530_2025p008_v001.yaml
+  #   runs: [78950 90000]
+  #   jobprio: 40
+  #   submit: OFF
+  #   dstspider: on
+
+

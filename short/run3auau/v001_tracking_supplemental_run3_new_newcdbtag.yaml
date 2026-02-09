@@ -1,10 +1,10 @@
 #______________________________________________________________________________________________________________________
-DST_TRKR_CLUSTER_run3cosmics:
+DST_TRKR_CLUSTER_run3calib:
   params:
     dsttype:     DST_TRKR_CLUSTER
     period:      run3auau
-    physicsmode: cosmics
-    dataset:     run3cosmics # could be run3cosmics, run3calib, etc.
+    physicsmode: calib
+    dataset:     run3calib # could be run3cosmics, run3calib, etc.
     build:       new
     dbtag:       newcdbtag
     version:     1
@@ -20,38 +20,11 @@ DST_TRKR_CLUSTER_run3cosmics:
     log:                   '{condor}/{logbase}.condor'
     neventsper:             10000
     payload:                [tracking_code/*]
-    request_memory:         12228MB
-    request_cpus:          '4'
+    request_memory:         12288MB
+    request_cpus:          '3'
     batch_name:            '{dsttype}_{dataset}_{outtriplet}'
     priority:              '3500'
-
-#______________________________________________________________________________________________________________________
-DST_TRKR_SEED_run3cosmics:
-  params:
-    dsttype:     DST_TRKR_SEED
-    period:      run3auau
-    physicsmode: cosmics
-    dataset:     run3cosmics # could be run3cosmics, run3calib, etc.
-    build:       new
-    dbtag:       newcdbtag
-    version:     1
-
-  input:
-    db:          fcr
-    table:       datasets
-    intriplet:   new_newcdbtag_v001
-
-  job:
-    script:                 run_jobA.sh
-    # arguments:             '{nevents} {outbase} {logbase} {inbase} {run} {seg} {outdir} {finaldir} {buildarg} {tag} {inputs} {neventsper} {logdir} {histdir} {payload}'
-    log:                   '{condor}/{logbase}.condor'
-    neventsper:             10000
-    payload:                [tracking_code/*]
-    request_memory:         4096MB
-    request_cpus:          '2'
-    batch_name:            '{dsttype}_{dataset}_{outtriplet}'
-    priority:              '3500'
-
+    
 #______________________________________________________________________________________________________________________
 DST_TRKR_MVTXME_run3auau:
   params:
@@ -79,10 +52,5 @@ DST_TRKR_MVTXME_run3auau:
     batch_name:            '{dsttype}_{dataset}_{outtriplet}'
     priority:              '3500'
 
-###############################################################################################
-###############################################################################################
-###############################################################################################
-###############################################################################################
-###############################################################################################
 ###############################################################################################
 

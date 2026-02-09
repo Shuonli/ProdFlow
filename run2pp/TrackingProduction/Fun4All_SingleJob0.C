@@ -26,7 +26,7 @@
 #include <ffamodules/CDBInterface.h>
 #include <ffamodules/FlagHandler.h>
 #include <mvtxrawhitqa/MvtxRawHitQA.h>
-#include <inttrawhitqa/InttRawHitQA.h>
+#include <inttrawhitqa/InttQa.h>
 #include <tpcqa/TpcRawHitQA.h>
 #include <phool/recoConsts.h>
 
@@ -126,24 +126,15 @@ void Fun4All_SingleJob0(
 
   Micromegas_HitUnpacking();
 
-  MvtxClusterizer* mvtxclusterizer = new MvtxClusterizer("MvtxClusterizer");
-  mvtxclusterizer->Verbosity(0);
-  se->registerSubsystem(mvtxclusterizer);
+  Mvtx_Clustering();
 
   Intt_Clustering();
 
   Tpc_LaserEventIdentifying();
   
-  TPC_LaminationClustering();
-
   TPC_LaserClustering();
 
-  auto tpcclusterizer = new TpcClusterizer;
-  tpcclusterizer->Verbosity(0);
-  tpcclusterizer->set_do_hit_association(G4TPC::DO_HIT_ASSOCIATION);
-  tpcclusterizer->set_rawdata_reco();
-  tpcclusterizer->set_reject_event(G4TPC::REJECT_LASER_EVENTS);
-  se->registerSubsystem(tpcclusterizer);
+  TPC_Clustering_run2pp();
 
   Micromegas_Clustering();
 
@@ -156,7 +147,7 @@ void Fun4All_SingleJob0(
   auto mvtx = new MvtxRawHitQA;
   se->registerSubsystem(mvtx);
 
-  auto intt = new InttRawHitQA;
+  auto intt = new InttQa;
   se->registerSubsystem(intt);
   
   auto tpc = new TpcRawHitQA;
@@ -172,8 +163,12 @@ void Fun4All_SingleJob0(
   if(G4TPC::ENABLE_CENTRAL_MEMBRANE_CLUSTERING)
   {
     out->AddNode("LASER_CLUSTER");
-    out->AddNode("LAMINATION_CLUSTER");
   }
+  out->StripRunNode("CYLINDERGEOM_MVTX");
+  out->StripRunNode("CYLINDERGEOM_INTT");
+  out->StripRunNode("CYLINDERCELLGEOM_SVTX");
+  out->StripRunNode("CYLINDERGEOM_MICROMEGAS_FULL");
+  out->StripRunNode("GEOMETRY_IO");
   se->registerOutputManager(out);
 
   se->run(nEvents);
